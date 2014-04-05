@@ -147,6 +147,7 @@ GameManager.prototype.move = function (direction) {
   this.prepareTiles();
 
   // Traverse the grid in the right direction and move tiles
+  var mergedTile;
   traversals.x.forEach(function (x) {
     traversals.y.forEach(function (y) {
       cell = { x: x, y: y };
@@ -159,6 +160,9 @@ GameManager.prototype.move = function (direction) {
         // Only one merger per row traversal?
         if (next && next.value === tile.value && !next.mergedFrom) {
           var merged = new Tile(positions.next, tile.value * 2);
+          if (!mergedTile || merged.value > mergedTile.value) {
+            mergedTile = merged;
+          }
           merged.mergedFrom = [tile, next];
 
           self.grid.insertTile(merged);
@@ -182,6 +186,10 @@ GameManager.prototype.move = function (direction) {
       }
     });
   });
+  if (mergedTile) {
+      console.log(mergedTile);
+      new Sound("assets/"+sounds[mergedTile.value]+".mp3",100,false).start();
+  }
 
   if (moved) {
     this.addRandomTile();
